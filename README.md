@@ -2,8 +2,10 @@
 
 Induced Mean Flow Policy Optimization for Unitree locomotion in Isaac Lab.
 
-This repository ships **only the paper iMFPO recipe** (1-NFE MeanFlow + iMF regression +
-frozen PPO action distillation). FPO++ / RFPO / ablations / visual tracks are not included.
+This repository ships **only the paper iMFPO recipe**: 1-NFE MeanFlow + iMF regression with
+the velocity-based policy ratio **ρF**, plus frozen PPO action distillation at training time.
+The same ρF + PPO-KD protocol is used for Go2 / G1 / H1 / Spot (the earlier Gaussian ρG path
+is not part of the public recipe). FPO++ / RFPO / ablations / visual tracks are not included.
 
 ## Contents
 
@@ -58,5 +60,7 @@ python tests/test_meanflow.py
 ## Notes
 
 - Deployed iMFPO policies are **1 NFE**. The PPO teacher is used only during training KD.
+- Training optimizes the regression-induced ratio ρF on stored interval-conditioned tuples;
+  inference evaluates the shared actor once on the full interval `(r,t)=(0,1)`.
 - Training writes under `work/` by default (`WORKDIR` overrides).
 - Robot assets and Isaac Lab / Isaac Sim are not vendored.

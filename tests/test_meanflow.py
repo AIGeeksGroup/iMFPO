@@ -17,7 +17,13 @@ _stubs.install()
 import torch
 from isaaclab_fpo.modules.actor_critic import ActorCritic
 from isaaclab_fpo.rl_cfg import FpoRslRlPpoActorCriticCfg
-from isaaclab_fpo.task_cfgs import GO2_FPO_VARIANTS, TASK_CONFIGS
+from isaaclab_fpo.task_cfgs import (
+    GO2_FPO_VARIANTS,
+    TASK_CONFIGS,
+    UNITREE_G1_FPO_VARIANTS,
+    UNITREE_H1_FPO_VARIANTS,
+    UNITREE_SPOT_FPO_VARIANTS,
+)
 
 
 class TestMeanFlowActor(unittest.TestCase):
@@ -43,6 +49,24 @@ class TestMeanFlowActor(unittest.TestCase):
         self.assertTrue(cfg.algorithm.teacher_kd_enabled)
         self.assertFalse(cfg.algorithm.reflow_enabled)
         self.assertIn("Unitree-Go2-Velocity", TASK_CONFIGS)
+
+    def test_all_robots_use_rhoF_recipe(self):
+        """Paper protocol: all embodiments share MeanFlow-iMF + ρF + PPO-KD (no Gaussian ρG)."""
+        registries = (
+            GO2_FPO_VARIANTS,
+            UNITREE_G1_FPO_VARIANTS,
+            UNITREE_H1_FPO_VARIANTS,
+            UNITREE_SPOT_FPO_VARIANTS,
+        )
+        for registry in registries:
+            cfg = registry["imfpo"]()
+            self.assertEqual(cfg.policy.policy_parameterization, "meanflow")
+            self.assertEqual(cfg.policy.meanflow_loss_mode, "imf")
+            self.assertEqual(float(getattr(cfg.policy, "meanflow_gaussian_std_init", 0.0) or 0.0), 0.0)
+            self.assertTrue(cfg.algorithm.teacher_kd_enabled)
+            self.assertFalse(cfg.algorithm.reflow_enabled)
+            self.assertEqual(float(getattr(cfg.algorithm, "gaussian_entropy_coef", 0.0) or 0.0), 0.0)
+            self.assertEqual(float(getattr(cfg.algorithm, "meanflow_aux_imf_coef", 0.0) or 0.0), 0.0)
 
 
 if __name__ == "__main__":

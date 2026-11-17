@@ -1,7 +1,9 @@
 """iMFPO runner configs and task registry.
 
-Only the paper iMFPO recipe is exposed. Train a frozen RSL-RL PPO teacher first
-then distill with ``--fpo_variant imfpo`` and ``--teacher_checkpoint``.
+Only the paper iMFPO recipe is exposed: MeanFlow-iMF + velocity-based ratio ρF
++ frozen PPO action distillation (no reflow / Gaussian ρG path).
+Train a frozen RSL-RL PPO teacher first, then distill with ``--fpo_variant imfpo``
+and ``--teacher_checkpoint``.
 """
 
 from __future__ import annotations
@@ -36,7 +38,7 @@ def _meanflow_policy(
 
 
 def _imfpo_algorithm(**overrides) -> FpoRslRlPpoAlgorithmCfg:
-    """Shared iMFPO + PPO-teacher KD settings (no reflow / adaptive compute)."""
+    """Shared iMFPO + PPO-teacher KD settings (ρF surrogate; no reflow / adaptive)."""
     kwargs = dict(
         reflow_enabled=False,
         reflow_teacher_checkpoint=_UNITREE_GO2_PPO_TEACHER,
@@ -54,7 +56,7 @@ def _imfpo_algorithm(**overrides) -> FpoRslRlPpoAlgorithmCfg:
 
 @configclass
 class UnitreeGo2ImfpoRunnerCfg(FpoRslRlOnPolicyRunnerCfg):
-    """Go2 paper iMFPO: 1-NFE MeanFlow + iMF regression + PPO action KD."""
+    """Go2 paper iMFPO: 1-NFE MeanFlow + ρF + PPO action KD."""
 
     experiment_name = "unitree_go2_imfpo"
     empirical_normalization = False
@@ -66,68 +68,41 @@ class UnitreeGo2ImfpoRunnerCfg(FpoRslRlOnPolicyRunnerCfg):
 
 @configclass
 class UnitreeG1ImfpoRunnerCfg(FpoRslRlOnPolicyRunnerCfg):
-    """G1 paper iMFPO: Gaussian MeanFlow PPO update + PPO action KD."""
+    """G1 paper iMFPO: same ρF + PPO-KD recipe as Go2 (no Gaussian ρG path)."""
 
     experiment_name = "unitree_g1_imfpo"
     empirical_normalization = False
     clip_actions = 2.0
-    max_iterations = 2000
+    max_iterations = 2500
     enable_post_training_eval = False
-    policy = _meanflow_policy("imf", action_perturb_std=0.0, meanflow_gaussian_std_init=0.5)
-    algorithm = _imfpo_algorithm(
-        n_samples_per_action=16,
-        num_learning_epochs=16,
-        reflow_teacher_checkpoint="",
-        teacher_kd_steps=[1],
-        teacher_kd_coef=0.2,
-        teacher_aux_zero_x0_prob=0.4,
-        gaussian_entropy_coef=0.01,
-        meanflow_aux_imf_coef=0.02,
-    )
+    policy = _meanflow_policy("imf")
+    algorithm = _imfpo_algorithm(reflow_teacher_checkpoint="")
 
 
 @configclass
 class UnitreeH1ImfpoRunnerCfg(FpoRslRlOnPolicyRunnerCfg):
-    """H1 paper iMFPO: Gaussian MeanFlow PPO update + PPO action KD."""
+    """H1 paper iMFPO: same ρF + PPO-KD recipe as Go2 (no Gaussian ρG path)."""
 
     experiment_name = "unitree_h1_imfpo"
     empirical_normalization = False
     clip_actions = 2.0
-    max_iterations = 2000
+    max_iterations = 2500
     enable_post_training_eval = False
-    policy = _meanflow_policy("imf", action_perturb_std=0.0, meanflow_gaussian_std_init=0.5)
-    algorithm = _imfpo_algorithm(
-        n_samples_per_action=16,
-        num_learning_epochs=16,
-        reflow_teacher_checkpoint="",
-        teacher_kd_steps=[1],
-        teacher_kd_coef=0.2,
-        teacher_aux_zero_x0_prob=0.4,
-        gaussian_entropy_coef=0.01,
-        meanflow_aux_imf_coef=0.02,
-    )
+    policy = _meanflow_policy("imf")
+    algorithm = _imfpo_algorithm(reflow_teacher_checkpoint="")
 
 
 @configclass
 class UnitreeSpotImfpoRunnerCfg(FpoRslRlOnPolicyRunnerCfg):
-    """Spot paper iMFPO: Gaussian MeanFlow PPO update + PPO action KD."""
+    """Spot paper iMFPO: same ρF + PPO-KD recipe as Go2 (no Gaussian ρG path)."""
 
     experiment_name = "unitree_spot_imfpo"
     empirical_normalization = False
     clip_actions = None
     max_iterations = 2500
     enable_post_training_eval = False
-    policy = _meanflow_policy("imf", action_perturb_std=0.0, meanflow_gaussian_std_init=0.5)
-    algorithm = _imfpo_algorithm(
-        n_samples_per_action=16,
-        num_learning_epochs=16,
-        reflow_teacher_checkpoint="",
-        teacher_kd_steps=[1],
-        teacher_kd_coef=0.2,
-        teacher_aux_zero_x0_prob=0.4,
-        gaussian_entropy_coef=0.01,
-        meanflow_aux_imf_coef=0.02,
-    )
+    policy = _meanflow_policy("imf")
+    algorithm = _imfpo_algorithm(reflow_teacher_checkpoint="")
 
 
 GO2_FPO_VARIANTS = {"imfpo": UnitreeGo2ImfpoRunnerCfg}

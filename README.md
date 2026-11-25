@@ -3,15 +3,13 @@
 This is the official repository for the paper:
 > iMFPO: Improving Mean Flow Policy Optimization with Drift-Aware Velocity Alignment for Embodied Control
 >
-> Lisiyu Pan<sup>*</sup>, Ting Huang<sup>*</sup>, [Zeyu Zhang](https://steve-zeyu-zhang.github.io/)<sup>†</sup>, and [Hao Tang](https://ha0tang.github.io/)<sup>‡</sup>
+> Lisiyu Pan\*, [Ting Huang](https://believeht029.github.io/)\*, [Zeyu Zhang](https://steve-zeyu-zhang.github.io/)<sup>†</sup>, and [Hao Tang](https://ha0tang.github.io/)<sup>‡</sup>
 >
 > School of Computer Science, Peking University
 >
 > <sup>*</sup>Equal contribution. <sup>†</sup>Project lead. <sup>‡</sup>Corresponding author.
 >
-> ### Paper (forthcoming) | [Website](https://aigeeksgroup.github.io/iMFPO/) | [Code](https://github.com/AIGeeksGroup/iMFPO)
-
-![iMFPO teaser showing real-robot locomotion, language-guided navigation, and real/simulation control](assets/teaser.png)
+> ### [Paper](https://arxiv.org/abs/xxxx) | [Website](https://aigeeksgroup.github.io/iMFPO/) | [Model](https://huggingface.co/AIGeeksGroup/iMFPO)
 
 ---
 
@@ -20,6 +18,8 @@ This is the official repository for the paper:
 iMFPO is a one-step generative policy optimization framework for embodied control. A shared interval-conditioned actor learns instantaneous velocity for reward-driven policy optimization and interval-averaged velocity for direct action generation. Drift-aware velocity alignment combines JVP-corrected velocity regression with the policy objective, while a frozen PPO teacher provides action-level guidance during training. At deployment, the actor generates an action in one network function evaluation (1 NFE), without iterative flow integration or teacher inference.
 
 The paper evaluates velocity-tracking locomotion on Go2, G1, H1, and Spot, together with qualitative Go2 real-robot locomotion and language-guided navigation demonstrations.
+
+![iMFPO teaser showing real-robot locomotion, language-guided navigation, and real/simulation control](assets/teaser.png)
 
 ## 📦Code and resources
 

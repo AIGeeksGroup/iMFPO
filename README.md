@@ -3,7 +3,7 @@
 This is the official repository for the paper:
 > iMFPO: Improving Mean Flow Policy Optimization with Drift-Aware Velocity Alignment for Embodied Control
 >
-> Lisiyu Pan\*, [Ting Huang](https://believeht029.github.io/)\*, [Zeyu Zhang](https://steve-zeyu-zhang.github.io/)<sup>†</sup>, and [Hao Tang](https://ha0tang.github.io/)<sup>‡</sup>
+> [Lisiyu Pan](https://github.com/yuyuyu-maker)\*, [Ting Huang](https://believeht029.github.io/)\*, [Zeyu Zhang](https://steve-zeyu-zhang.github.io/)<sup>†</sup>, and [Hao Tang](https://ha0tang.github.io/)<sup>‡</sup>
 >
 > School of Computer Science, Peking University
 >

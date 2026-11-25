@@ -11,6 +11,21 @@ This is the official repository for the paper:
 >
 > ### [Paper](https://arxiv.org/abs/xxxx) | [Website](https://aigeeksgroup.github.io/iMFPO/) | [Model](https://huggingface.co/AIGeeksGroup/iMFPO)
 
+## 🎥 iMFPO
+
+https://github.com/user-attachments/assets/712c505a-aa10-4c2c-818a-873902a16efd
+
+
+## ✏️ Citation
+If you find our code or paper helpful, please consider starring ⭐ us and citing:
+```bibtex
+@article{pan2026imfpo,
+  title   = {iMFPO: Improving Mean Flow Policy Optimization with Drift-Aware Velocity Alignment for Embodied Control},
+  author  = {Pan, Lisiyu and Huang, Ting and Zhang, Zeyu and Tang, Hao},
+  journal = {arXiv preprint arXiv:xxxxx},
+  year    = {2026}
+}
+```
 ---
 
 ## 🥳Introduction

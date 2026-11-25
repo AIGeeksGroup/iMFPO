@@ -1,58 +1,47 @@
-<div align="center">
+# iMFPO: Improving Mean Flow Policy Optimization with Drift-Aware Velocity Alignment for Embodied Control
 
-# iMFPO
+This is the official repository for the paper:
+> iMFPO: Improving Mean Flow Policy Optimization with Drift-Aware Velocity Alignment for Embodied Control
+>
+> Lisiyu Pan<sup>*</sup>, Ting Huang<sup>*</sup>, [Zeyu Zhang](https://steve-zeyu-zhang.github.io/)<sup>†</sup>, and [Hao Tang](https://ha0tang.github.io/)<sup>‡</sup>
+>
+> School of Computer Science, Peking University
+>
+> <sup>*</sup>Equal contribution. <sup>†</sup>Project lead. <sup>‡</sup>Corresponding author.
+>
+> ### Paper (forthcoming) | [Website](https://aigeeksgroup.github.io/iMFPO/) | [Code](https://github.com/AIGeeksGroup/iMFPO)
 
-### Induced Mean Flow Policy Optimization for Fast Quadruped Locomotion
-
-Isaac Lab implementation of a one-step MeanFlow policy for Unitree Go2, G1, H1, and Spot velocity control.
-
-</div>
+![iMFPO teaser showing real-robot locomotion, language-guided navigation, and real/simulation control](assets/teaser.png)
 
 ---
 
-## ✨ Overview
+## 🥳Introduction
 
-iMFPO learns a continuous-time policy flow and evaluates it with **one function evaluation (1 NFE)** at deployment. The training objective combines induced MeanFlow regression with the regression-induced policy ratio `ρF`; a frozen PPO teacher can provide action distillation during training.
+iMFPO is a one-step generative policy optimization framework for embodied control. A shared interval-conditioned actor learns instantaneous velocity for reward-driven policy optimization and interval-averaged velocity for direct action generation. Drift-aware velocity alignment combines JVP-corrected velocity regression with the policy objective, while a frozen PPO teacher provides action-level guidance during training. At deployment, the actor generates an action in one network function evaluation (1 NFE), without iterative flow integration or teacher inference.
 
-The released recipe contains:
+The paper evaluates velocity-tracking locomotion on Go2, G1, H1, and Spot, together with qualitative Go2 real-robot locomotion and language-guided navigation demonstrations.
 
-- one-step MeanFlow inference for velocity-conditioned locomotion;
-- PPO teacher distillation during training (`PPO-KD`);
-- Isaac Lab tasks for Go2, G1, H1, and Spot;
-- training, evaluation, visualization, and ONNX export utilities.
+## 📦Code and resources
 
-The PPO teacher is used only while training. The deployed iMFPO actor runs once on the full interval `(r, t) = (0, 1)`.
+| Resource | Location | Use |
+| --- | --- | --- |
+| iMFPO actor, objective, and runner | `source/isaaclab_fpo/` | Training and one-step inference |
+| Robot task definitions | `source/unitree_rl_lab/` | Go2, G1-29DoF, H1, and Spot in Isaac Lab |
+| PPO teacher scripts | `scripts/rsl_rl/`, `scripts/run_ppo_teacher.sh` | Training-time teacher |
+| iMFPO scripts | `scripts/fpo/`, `scripts/run_imfpo.sh` | Training, evaluation, playback, and ONNX export |
+| Paper figures | `assets/` | Teaser, framework, and real/simulation keyframes |
 
-## 🧩 Method
+Isaac Lab / Isaac Sim, robot assets, trained checkpoints, and the physical-robot deployment stack are not bundled with this repository.
 
-```text
-velocity command + proprioception
-                │
-                ▼
-      one-step MeanFlow actor
-                │
-                ▼
-       12-D joint-position action
-                │
-                ▼
-          PD locomotion control
-```
+## 🧩Method
 
-For the paper recipe, Go2, G1, H1, and Spot use the velocity-based ratio `ρF`. The PPO teacher supplies the optional training-time distillation target; it is not required by the exported policy.
+![iMFPO framework: shared actor, drift-aware velocity alignment, teacher guidance during training, and one-step deployment](assets/framework.png)
 
-## 📦 Repository structure
+The same actor handles two interval settings. A zero-length interval supplies instantaneous-velocity supervision for policy learning; a full interval predicts the average velocity used to generate an action directly. Training combines reward-driven updates, JVP-corrected velocity regression, and guidance from a frozen PPO teacher. The teacher is not part of the deployed policy.
 
-| Path | Description |
-| --- | --- |
-| `source/isaaclab_fpo` | MeanFlow actor, iMFPO objective, runner, and export support |
-| `source/unitree_rl_lab` | Unitree locomotion task definitions |
-| `scripts/rsl_rl` | PPO teacher training |
-| `scripts/fpo` | iMFPO training, evaluation, playback, and ONNX export |
-| `tests` | CPU smoke and MeanFlow regression tests |
+## ⚙️Environment setup
 
-## ⚙️ Environment setup
-
-The repository expects an existing Isaac Lab / Isaac Sim installation. Robot assets and Isaac Lab are not vendored.
+Use a Linux environment with an NVIDIA GPU and an existing Isaac Lab / Isaac Sim installation. Set the paths to your Isaac Lab environment and robot assets before installing the local packages:
 
 ```bash
 git clone https://github.com/AIGeeksGroup/iMFPO.git
@@ -67,26 +56,22 @@ python -m pip install -e source/isaaclab_fpo
 python -m pip install -e source/unitree_rl_lab
 ```
 
-Use the Isaac Lab environment's Python interpreter for all commands below.
+Use the Isaac Lab environment's Python interpreter for the commands below.
 
-## 🔥 Training
+## 🔥Training
 
-### 1. Train a PPO teacher
+Train a PPO teacher, then train iMFPO using its checkpoint for training-time action guidance:
 
 ```bash
 GPU=0 TASK=Unitree-Go2-Velocity MAX_ITERS=3000 \
   bash scripts/run_ppo_teacher.sh
-```
 
-### 2. Train iMFPO
-
-```bash
-GPU=0 \
+GPU=0 TASK=Unitree-Go2-Velocity \
 TEACHER_CHECKPOINT=/path/to/ppo_teacher.pt \
   bash scripts/run_imfpo.sh
 ```
 
-Other supported robots use the corresponding task and teacher checkpoint:
+For another embodiment, change `TASK` and supply its matching teacher checkpoint. For example:
 
 ```bash
 GPU=0 TASK=Unitree-G1-29dof-Velocity \
@@ -94,58 +79,60 @@ TEACHER_CHECKPOINT=/path/to/g1_ppo_teacher.pt \
   bash scripts/run_imfpo.sh
 ```
 
-Useful overrides include `NUM_ENVS`, `MAX_ITERS`, `SEED`, `RUN_NAME`, `WORKDIR`, `RESUME=1`, and `CHECKPOINT=/path/to/model.pt`.
+The scripts also accept `NUM_ENVS`, `MAX_ITERS`, `SEED`, `RUN_NAME`, `WORKDIR`, `RESUME=1`, and `CHECKPOINT=/path/to/model.pt` as environment overrides.
 
-## 📊 Evaluation and playback
+## 📊Evaluation
+
+The paper reports mean episode return under zero-latent evaluation (higher is better):
+
+| Method | NFE | Go2 | G1 | H1 | Spot |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| RFPO | 64 | 35.58 | 32.55 | 416.06 | 28.19 |
+| RFPO | 1 | 35.16 | 33.59 | 412.40 | 27.89 |
+| **iMFPO** | **1** | **35.69** | **34.44** | **416.23** | **29.86** |
+
+Return scales differ by robot task. On Go2, batch-size-one actor latency (p50) is 0.41 ms for 1-NFE iMFPO and 15.57 ms for 64-NFE RFPO, approximately a 38× reduction at comparable return. The paper averages 256 episodes per result unless otherwise specified; real-robot demonstrations are qualitative.
+
+Evaluate a trained checkpoint or inspect a rollout with the supplied scripts:
 
 ```bash
 python scripts/fpo/eval_imfpo.py --help
-python scripts/fpo/eval_rsl_ppo.py \
-  --model_checkpoint /path/to/ppo_teacher.pt
-
+python scripts/fpo/eval_rsl_ppo.py --model_checkpoint /path/to/ppo_teacher.pt
 python scripts/fpo/play.py --help
 ```
 
-For a live Viser scene, use the playback script with `--viser`; the scene contains the robot meshes and the white ground grid used for visual inspection.
+## 🤖Visualization and real-robot demonstrations
 
-## 🚀 Export for deployment
+The paper includes matched real-robot and simulation keyframes for forward/backward, lateral, and turning commands, plus language-guided Go2 navigation sequences:
+
+![Go2 real-robot and simulation keyframes from the paper](assets/real_sim_keyframes.png)
+
+Use `python scripts/fpo/play.py --help` for playback options. The `--viser` option provides an interactive scene with robot meshes and a ground grid.
+
+## 🚀Export for deployment
 
 Export a trained iMFPO checkpoint to ONNX:
 
 ```bash
-python scripts/fpo/export_onnx.py \\
-  --checkpoint /path/to/imfpo/model_2499.pt \\
-  --sampling-steps 1 \\
+python scripts/fpo/export_onnx.py \
+  --checkpoint /path/to/imfpo/model_2499.pt \
+  --sampling-steps 1 \
   --out-dir /path/to/exported
 ```
 
-The deployment contract for Go2 is:
+For Go2, the deployment interface is a 45-D observation, a 12-D joint-position action, one network evaluation, and 50 Hz control. Use the matching joint order, default pose, action scale, observation normalization, and PD configuration when connecting the exported policy to the robot.
 
-| Item | Value |
-| --- | --- |
-| Observation | 45-D proprioceptive state and velocity command |
-| Action | 12-D joint-position action |
-| Inference | MeanFlow, 1 NFE |
-| Control rate | 50 Hz (`step_dt = 0.02`) |
-| PD gains | `kp = 25`, `kd = 0.5` |
+## 🧪Verification
 
-The exported ONNX file must be used together with the matching deployment configuration, including joint order, default pose, action scale, and observation normalization.
-
-## 🧪 Verification
-
-Run the CPU regression tests:
+CPU regression and smoke checks are available:
 
 ```bash
 python tests/test_meanflow.py
 python tests/smoke_runner_mock_env.py
 ```
 
-Before deploying to hardware, validate the exported ONNX in a closed-loop simulator and check the joint mapping and PD configuration against the target robot.
+Before hardware deployment, validate the exported ONNX in closed-loop simulation and verify the robot-specific joint mapping and control configuration.
 
-## 📄 License and citation
+## 🫶Acknowledgements
 
-See [LICENCE](LICENCE) for the license. If you use this code or the iMFPO method, please cite the accompanying iMFPO paper and link this repository in your work.
-
-## 🙏 Acknowledgements
-
-This project builds on Isaac Lab, Isaac Sim, RSL-RL, and the Unitree locomotion environments. We thank their authors and maintainers for the open-source infrastructure.
+This project builds on Isaac Lab, Isaac Sim, RSL-RL, and the Unitree locomotion environments. We thank their authors and maintainers for the open-source infrastructure. See [LICENCE](LICENCE) for repository licensing.

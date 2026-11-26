@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="iMFPO: Improving Mean Flow Policy Optimization with Drift-Aware Velocity Alignment for Embodied Control.">
+  <title>iMFPO — One-step Embodied Control</title>
+  <link rel="icon" type="image/svg+xml" sizes="any" href="assets/pku.svg">
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body id="top">
+  <header class="hero">
+    <div class="wrap">
+      <a class="institution" href="https://www.pku.edu.cn/" target="_blank" rel="noopener">
+        <img src="assets/pku.svg" alt="Peking University" width="64" height="64">
+      </a>
+      <h1><span>iMFPO:</span> Improving Mean Flow Policy Optimization with Drift-Aware Velocity Alignment for Embodied Control</h1>
+      <div class="authors" aria-label="Authors">
+        <span><a href="https://github.com/yuyuyu-maker" target="_blank" rel="noopener">Lisiyu Pan</a><sup>*</sup></span>
+        <span><a href="https://believeht029.github.io/" target="_blank" rel="noopener">Ting Huang</a><sup>*</sup></span>
+        <span><a href="https://steve-zeyu-zhang.github.io/" target="_blank" rel="noopener">Zeyu Zhang</a><sup>†</sup></span>
+        <span><a href="https://ha0tang.github.io/" target="_blank" rel="noopener">Hao Tang</a><sup title="Corresponding author" aria-label="Corresponding author">✉</sup></span>
+      </div>
+      <p class="affiliation">School of Computer Science, Peking University</p>
+      <p class="notes">* Equal contribution &nbsp; † Project lead &nbsp; ✉ Corresponding author</p>
+      <div class="actions">
+        <a class="button" href="http://arxiv.org/abs/2611.33922" target="_blank" rel="noopener">Paper</a>
+        <a class="button" href="https://github.com/AIGeeksGroup/iMFPO" target="_blank" rel="noopener">Code</a>
+        <a class="button" href="https://huggingface.co/AIGeeksGroup/iMFPO" target="_blank" rel="noopener">Model</a>
+      </div>
+      <figure class="demo" id="demo">
+        <video src="assets/demo.mp4" poster="assets/demo-poster.jpg" controls playsinline preload="metadata" aria-label="Narrated iMFPO project overview"></video>
+      </figure>
+    </div>
+  </header>
+  <main>
+    <section id="method">
+      <div class="wrap">
+        <h2>Method</h2>
+        <p class="lead">iMFPO generates each action in one network evaluation using a learned interval-averaged velocity.</p>
+        <figure class="paper-figure">
+          <img src="assets/method.jpg" alt="iMFPO training and one-step deployment pipeline" loading="lazy">
+        </figure>
+      </div>
+    </section>
+    <section class="experiments" id="real-sim">
+      <div class="wrap">
+        <h2>Sim2Real Locomotion</h2>
+        <p class="lead">Compare each Go2 command in simulation and on the physical robot. Each clip plays independently at its recorded speed.</p>
+        <div class="motion">
+          <h3>Forward and backward</h3>
+          <div class="pair">
+            <figure class="clip">
+              <video src="assets/videos/forward-backward-sim.mp4" poster="assets/videos/forward-backward-sim.jpg" controls autoplay muted loop playsinline aria-label="Forward and backward · Simulation"></video>
+              <figcaption>Simulation</figcaption>
+            </figure>
+            <figure class="clip">
+              <video src="assets/videos/forward-backward-real.mp4" poster="assets/videos/forward-backward-real.jpg" controls autoplay muted loop playsinline aria-label="Forward and backward · Real robot"></video>
+              <figcaption>Real robot</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="motion">
+          <h3>Lateral movement</h3>
+          <div class="pair">
+            <figure class="clip">
+              <video src="assets/videos/lateral-sim.mp4" poster="assets/videos/lateral-sim.jpg" controls autoplay muted loop playsinline aria-label="Lateral movement · Simulation"></video>
+              <figcaption>Simulation</figcaption>
+            </figure>
+            <figure class="clip">
+              <video src="assets/videos/lateral-real.mp4" poster="assets/videos/lateral-real.jpg" controls autoplay muted loop playsinline aria-label="Lateral movement · Real robot"></video>
+              <figcaption>Real robot</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="motion">
+          <h3>Turning</h3>
+          <div class="pair">
+            <figure class="clip">
+              <video src="assets/videos/turning-sim.mp4" poster="assets/videos/turning-sim.jpg" controls autoplay muted loop playsinline aria-label="Turning · Simulation"></video>
+              <figcaption>Simulation</figcaption>
+            </figure>
+            <figure class="clip">
+              <video src="assets/videos/turning-real.mp4" poster="assets/videos/turning-real.jpg" controls autoplay muted loop playsinline aria-label="Turning · Real robot"></video>
+              <figcaption>Real robot</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="navigation">
+      <div class="wrap">
+        <h2>Language-Guided Navigation</h2>
+        <p class="lead">Three language instructions executed by the physical Go2 robot.</p>
+        <div class="navigation-clips">
+          <figure class="clip">
+            <video src="assets/videos/approach-chair.mp4" poster="assets/videos/approach-chair.jpg" controls autoplay muted loop playsinline aria-label="Approach the chair"></video>
+            <figcaption>Approach the chair</figcaption>
+          </figure>
+          <figure class="clip">
+            <video src="assets/videos/between-bin-and-chair.mp4" poster="assets/videos/between-bin-and-chair.jpg" controls autoplay muted loop playsinline aria-label="Pass between the bin and the chair"></video>
+            <figcaption>Pass between the bin and the chair</figcaption>
+          </figure>
+          <figure class="clip">
+            <video src="assets/videos/approach-door.mp4" poster="assets/videos/approach-door.jpg" controls autoplay muted loop playsinline aria-label="Approach the door"></video>
+            <figcaption>Approach the door</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+    <section id="bibtex">
+      <div class="wrap">
+        <h2>BibTeX</h2>
+        <pre class="citation"><code>@misc{pan2026imfpo,
+  title  = {{iMFPO}: Improving Mean Flow Policy Optimization with Drift-Aware Velocity Alignment for Embodied Control},
+  author = {Pan, Lisiyu and Huang, Ting and Zhang, Zeyu and Tang, Hao},
+  year   = {2026}
+}</code></pre>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

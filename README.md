@@ -9,7 +9,7 @@ This is the official repository for the paper:
 >
 > <sup>*</sup>Equal contribution. <sup>†</sup>Project lead. <sup>‡</sup>Corresponding author.
 >
-> ### [Paper](http://arxiv.org/abs/2611.33922) | [Website](https://aigeeksgroup.github.io/iMFPO/) | [Model](https://huggingface.co/AIGeeksGroup/iMFPO)
+> ### [Paper](https://arxiv.org/abs/2611.33922) | [Website](https://aigeeksgroup.github.io/iMFPO/) | [Model](https://huggingface.co/AIGeeksGroup/iMFPO)
 
 ## 🎥 iMFPO
 
